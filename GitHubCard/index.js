@@ -12,7 +12,7 @@ axios.get('https://api.github.com/users/pdadlani')
     cards.appendChild(userData);
   })
   .catch(error => {
-    console.log('There is an issue', error, '. Please try again.')
+    console.log('There is an issue with your personal data', error, '. Please try again.')
   })
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
@@ -36,7 +36,23 @@ axios.get('https://api.github.com/users/pdadlani')
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+let followersArray = [];
+
+axios.get('https://api.github.com/users/pdadlani/followers')
+  .then(data => {
+    console.log('followers', data)
+    // set followersArray to only equal to the necessary data of all my followers
+    followersArray = data.data;
+    console.log('followersArrayData', followersArray)
+
+    // iterate over all my followers to create a new user component and add it as a child in the DOM.
+    followersArray.forEach(followerData => {
+      cards.appendChild(userComponent(followerData));
+    })
+  })
+  .catch(error => {
+    console.log('There is an issue collecting your followers data', error, '. Please try again.')
+  })
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -101,7 +117,7 @@ function userComponent(userObject) {
 
   // set the content
   userImg.src = userObject.avatar_url;
-  userName.textContent = userObject.name;
+  userName.textContent = userObject.name || 'Cool person w/o a name';
   userUsername.textContent = userObject.login;
   location.textContent = `Location: ${userObject.location}`;
   profile.textContent = 'Profile:';
