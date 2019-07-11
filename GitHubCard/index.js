@@ -3,6 +3,18 @@
            https://api.github.com/users/<your name>
 */
 
+const cards = document.querySelector('.cards');
+
+axios.get('https://api.github.com/users/pdadlani')
+  .then(data => {
+    console.log('my data', data)
+    const userData = userComponent(data.data);
+    cards.appendChild(userData);
+  })
+  .catch(error => {
+    console.log('There is an issue', error, '. Please try again.')
+  })
+
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
@@ -53,3 +65,50 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+function userComponent(userObject) {
+  // create the elements
+  const card = document.createElement('div'),
+    userImg = document.createElement('img'),
+    cardInfo = document.createElement('div'),
+    userName = document.createElement('h3'),
+    userUsername = document.createElement('p'),
+    location = document.createElement('p'),
+    profile = document.createElement('p'),
+    profileLink = document.createElement('a'),
+    followers = document.createElement('p'),
+    following = document.createElement('p'),
+    bio = document.createElement('p');
+
+  // set up structure of the elements
+  card.appendChild(userImg);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(userName);
+  cardInfo.appendChild(userUsername);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  profile.appendChild(profileLink);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+
+
+  // set the styles aka class names
+  card.classList.add('card');
+  cardInfo.classList.add('card-info');
+  userName.classList.add('name');
+  userUsername.classList.add('username');
+
+  // set the content
+  userImg.src = userObject.avatar_url;
+  userName.textContent = userObject.name;
+  userUsername.textContent = userObject.login;
+  location.textContent = `Location: ${userObject.location}`;
+  profile.textContent = 'Profile:';
+  profileLink.href = userObject.html_url;
+  followers.textContent = `Followers: ${userObject.followers}`;
+  following.textContent = `Following: ${userObject.following}`;
+  bio.textContent = `Bio: ${userObject.bio}`;
+
+  return card;
+}
