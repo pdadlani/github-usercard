@@ -8,7 +8,7 @@ const cards = document.querySelector('.cards');
 axios.get('https://api.github.com/users/pdadlani')
   // outcome if promise is a success
   .then(data => {
-    // console.log('my data', data)
+    console.log('my data', data)
 
     // create a new element with data received into card userComponent function
     const userData = userComponent(data.data);
@@ -108,6 +108,18 @@ function userComponent(userObject) {
     following = document.createElement('p'),
     bio = document.createElement('p');
 
+  // set the content
+  userImg.src = userObject.avatar_url;
+  userName.textContent = userObject.name || 'Cool person w/o a name';
+  userUsername.textContent = userObject.login;
+  location.textContent = `Location: ${userObject.location}`;
+  profile.textContent = 'Profile: ';
+  profileLink.textContent = 'Link';
+  profileLink.href = userObject.html_url;
+  followers.textContent = `Followers: ${userObject.followers}`;
+  following.textContent = `Following: ${userObject.following}`;
+  bio.textContent = `Bio: ${userObject.bio}`;
+
   // set up structure of the elements
   card.appendChild(userImg);
   card.appendChild(cardInfo);
@@ -127,17 +139,6 @@ function userComponent(userObject) {
   userName.classList.add('name');
   userUsername.classList.add('username');
 
-  // set the content
-  userImg.src = userObject.avatar_url;
-  userName.textContent = userObject.name || 'Cool person w/o a name';
-  userUsername.textContent = userObject.login;
-  location.textContent = `Location: ${userObject.location}`;
-  profile.textContent = 'Profile:';
-  profileLink.textContent = 'Link';
-  profileLink.href = userObject.html_url;
-  followers.textContent = `Followers: ${userObject.followers}`;
-  following.textContent = `Following: ${userObject.following}`;
-  bio.textContent = `Bio: ${userObject.bio}`;
 
   // return the card, all info is a child to card...so returns all info
   return card;
