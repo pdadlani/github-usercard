@@ -6,11 +6,16 @@
 const cards = document.querySelector('.cards');
 
 axios.get('https://api.github.com/users/pdadlani')
+  // outcome if promise is a success
   .then(data => {
-    console.log('my data', data)
+    // console.log('my data', data)
+
+    // create a new element with data received into card userComponent function
     const userData = userComponent(data.data);
+    // add my user data to DOM
     cards.appendChild(userData);
   })
+  // outcome if promise is a failure
   .catch(error => {
     console.log('There is an issue with your personal data', error, '. Please try again.')
   })
@@ -39,17 +44,24 @@ axios.get('https://api.github.com/users/pdadlani')
 let followersArray = [];
 
 axios.get('https://api.github.com/users/pdadlani/followers')
+  // outcome if promise is a success
   .then(data => {
-    console.log('followers', data)
+    // console.log('followers', data)
     // set followersArray to only equal to the necessary data of all my followers
     followersArray = data.data;
-    console.log('followersArrayData', followersArray)
+    // console.log('followersArrayData', followersArray)
 
-    // iterate over all my followers to create a new user component and add it as a child in the DOM.
+    // iterate over all my followers to access their individual url, to then create a new user component and add it as a child in the DOM.
     followersArray.forEach(followerData => {
-      cards.appendChild(userComponent(followerData));
+      // console.log('followers Data:', followerData);
+      axios.get(followerData.url) 
+        .then(data => {
+          // console.log('forEach followers data', data)
+          cards.appendChild(userComponent(data.data));
+        })
     })
   })
+  // outcome if promise is a failure
   .catch(error => {
     console.log('There is an issue collecting your followers data', error, '. Please try again.')
   })
@@ -121,10 +133,12 @@ function userComponent(userObject) {
   userUsername.textContent = userObject.login;
   location.textContent = `Location: ${userObject.location}`;
   profile.textContent = 'Profile:';
+  profileLink.textContent = 'Link';
   profileLink.href = userObject.html_url;
   followers.textContent = `Followers: ${userObject.followers}`;
   following.textContent = `Following: ${userObject.following}`;
   bio.textContent = `Bio: ${userObject.bio}`;
 
+  // return the card, all info is a child to card...so returns all info
   return card;
 }
