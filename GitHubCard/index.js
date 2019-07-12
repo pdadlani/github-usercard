@@ -14,7 +14,15 @@ axios.get('https://api.github.com/users/pdadlani')
     const userData = userComponent(data.data);
     // add my user data to DOM
     cards.appendChild(userData);
+
+    // creating contribution graph
+    let contributions = document.createElement('div');
+    cards.appendChild(contributions);
+    console.log('data.login', data.data.login)
+    contributions.id = data.data.login;
+    new GitHubCalendar("#" + data.data.login, data.data.login);
   })
+
   // outcome if promise is a failure
   .catch(error => {
     console.log('There is an issue with your personal data', error, '. Please try again.')
@@ -44,57 +52,79 @@ axios.get('https://api.github.com/users/pdadlani')
 let followersArray = [];
 
 axios.get('https://api.github.com/users/pdadlani/followers')
-  // outcome if promise is a success
-  .then(data => {
+  // solution 1: for outcome if promise is a success; all code in one .then. solution 2 in next block of code
+  // .then(data => {
+  //   // console.log('followers', data)
+  //   // set followersArray to only equal to the necessary data of all my followers
+  //   followersArray = data.data;
+  //   // console.log('followersArrayData', followersArray)
+
+  //   // iterate over all my followers to access their individual url, to then create a new user component and add it as a child in the DOM.
+  //   followersArray.forEach(followerData => {
+  //     // console.log('followers Data:', followerData);
+  //     axios.get(followerData.url) 
+  //       .then(data => {
+  //         // console.log('forEach followers data', data)
+  //         cards.appendChild(userComponent(data.data));
+  //       })
+  //   })
+  // })
+
+  // solution 2: for outcome if promise is a success; uses nested(?) .then()'s
+  .then(data => 
     // console.log('followers', data)
     // set followersArray to only equal to the necessary data of all my followers
-    followersArray = data.data;
+    followersArray = data.data)
     // console.log('followersArrayData', followersArray)
 
     // iterate over all my followers to access their individual url, to then create a new user component and add it as a child in the DOM.
+  .then(followersArray =>  
     followersArray.forEach(followerData => {
       // console.log('followers Data:', followerData);
-      axios.get(followerData.url) 
+      axios.get(followerData.url)
         .then(data => {
           // console.log('forEach followers data', data)
           cards.appendChild(userComponent(data.data));
+          // // creating contribution graph
+          // let contributions = document.createElement('div');
+          // cards.appendChild(contributions);
+          // console.log('data.login', data.data.login)
+          // contributions.id = data.data.login;
+          // new GitHubCalendar("#" + data.data.login, data.data.login);
         })
+
     })
-  })
+  )
+
   // outcome if promise is a failure
   .catch(error => {
     console.log('There is an issue collecting your followers data', error, '. Please try again.')
   })
 
-/* Step 3: Create a function that accepts a single object as its only argument,
-          Using DOM methods and properties, create a component that will return the following DOM element:
+// /* Step 3: Create a function that accepts a single object as its only argument,
+//           Using DOM methods and properties, create a component that will return the following DOM element:
 
-<div class="card">
-  <img src={image url of user} />
-  <div class="card-info">
-    <h3 class="name">{users name}</h3>
-    <p class="username">{users user name}</p>
-    <p>Location: {users location}</p>
-    <p>Profile:  
-      <a href={address to users github page}>{address to users github page}</a>
-    </p>
-    <p>Followers: {users followers count}</p>
-    <p>Following: {users following count}</p>
-    <p>Bio: {users bio}</p>
-  </div>
-</div>
+// <div class="card">
+//   <img src={image url of user} />
+//   <div class="card-info">
+//     <h3 class="name">{users name}</h3>
+//     <p class="username">{users user name}</p>
+//     <p>Location: {users location}</p>
+//     <p>Profile:  
+//       <a href={address to users github page}>{address to users github page}</a>
+//     </p>
+//     <p>Followers: {users followers count}</p>
+//     <p>Following: {users following count}</p>
+//     <p>Bio: {users bio}</p>
+//   </div>
+// </div>
 
-*/
-
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
+// */
 
 function userComponent(userObject) {
+
+   // another way to create elements with: parent, type, classes, and textContent
+   // const card = createElement(null, 'div',  ['card'], null);
   // create the elements
   const card = document.createElement('div'),
     userImg = document.createElement('img'),
@@ -106,31 +136,37 @@ function userComponent(userObject) {
     profileLink = document.createElement('a'),
     followers = document.createElement('p'),
     following = document.createElement('p'),
-    bio = document.createElement('p');
+    bio = document.createElement('p'),
+    contributions = document.createElement('div');
 
   // set the content
   userImg.src = userObject.avatar_url;
   userName.textContent = userObject.name || 'Cool person w/o a name';
   userUsername.textContent = userObject.login;
-  location.textContent = `Location: ${userObject.location}`;
+  location.textContent = `Location: ${userObject.location || 'Undisclosed'}`;
   profile.textContent = 'Profile: ';
-  profileLink.textContent = 'Link';
   profileLink.href = userObject.html_url;
+  profileLink.textContent = userObject.html_url;
   followers.textContent = `Followers: ${userObject.followers}`;
   following.textContent = `Following: ${userObject.following}`;
-  bio.textContent = `Bio: ${userObject.bio}`;
+  bio.textContent = `Bio: ${userObject.bio || "Unavailable"}`;
 
   // set up structure of the elements
-  card.appendChild(userImg);
-  card.appendChild(cardInfo);
-  cardInfo.appendChild(userName);
-  cardInfo.appendChild(userUsername);
-  cardInfo.appendChild(location);
-  cardInfo.appendChild(profile);
+  // can use 'append' to append more than one element
+  // otherwise use 'appendChild' if you want to do it one-by-one. 'append' also allows you to do it one-by-one.
+  card.append(userImg,
+    cardInfo);
+  // card.appendChild(userImg);
+  // card.appendChild(cardInfo);
+  cardInfo.append(userName,
+    userUsername,
+    location,
+    profile,
+    followers,
+    following,
+    bio);
   profile.appendChild(profileLink);
-  cardInfo.appendChild(followers);
-  cardInfo.appendChild(following);
-  cardInfo.appendChild(bio);
+  // card.appendChild(contributions);
 
 
   // set the styles aka class names
@@ -138,8 +174,27 @@ function userComponent(userObject) {
   cardInfo.classList.add('card-info');
   userName.classList.add('name');
   userUsername.classList.add('username');
+  // contributions.id = data.login;
+
+  // new GitHubCalendar('#', data.login, data.login)
 
 
   // return the card, all info is a child to card...so returns all info
   return card;
 }
+
+
+// function successAll(promiseArr) {
+//   promiseArr.forEach(data => success(data));
+// }
+
+// function failueAll(promiseArr) {
+//   promiseArr.forEach(data => failure(data));
+// }
+
+// // Append by order given
+// let map = people.map(person => req(person));
+
+// Promise.all(map)
+//   .then(successAll)
+//   .catch(failueAll)
