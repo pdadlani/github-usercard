@@ -182,19 +182,3 @@ function userComponent(userObject) {
   // return the card, all info is a child to card...so returns all info
   return card;
 }
-
-
-// function successAll(promiseArr) {
-//   promiseArr.forEach(data => success(data));
-// }
-
-// function failueAll(promiseArr) {
-//   promiseArr.forEach(data => failure(data));
-// }
-
-// // Append by order given
-// let map = people.map(person => req(person));
-
-// Promise.all(map)
-//   .then(successAll)
-//   .catch(failueAll)
